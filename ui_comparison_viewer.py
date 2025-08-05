@@ -17,7 +17,7 @@ with open(input_file, "r", encoding="utf-8") as f:
     full_data = json.load(f)
 
 # Use only first 5 prompts
-full_data["data"] = full_data["data"][:5]
+# full_data["data"] = full_data["data"][:5]
 prompts = full_data["data"]
 
 # Session state
@@ -176,4 +176,5 @@ else:
     sns.heatmap(heatmap_data.astype(float), annot=True, cmap="Blues", fmt=".2f", ax=ax3)
     ax3.set_title("Pairwise Win Rate Heatmap")
     st.pyplot(fig3)
+
 
