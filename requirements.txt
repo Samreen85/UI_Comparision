@@ -1,0 +1,7 @@
+lxml
+playwright
+streamlit
+gspread
+oauth2client
+matplotlib
+seaborn
