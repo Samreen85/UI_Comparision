@@ -8,8 +8,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # File paths
-input_file = Path("data/rendered_outputs/rendered_ui_links.json")
-output_file = Path("data/rendered_outputs/selected_results.json")
+input_file = Path("rendered_ui_links.json")
+output_file = Path("selected_results.json")
 output_file.parent.mkdir(parents=True, exist_ok=True)
 
 # Load input JSON
@@ -176,3 +176,4 @@ else:
     sns.heatmap(heatmap_data.astype(float), annot=True, cmap="Blues", fmt=".2f", ax=ax3)
     ax3.set_title("Pairwise Win Rate Heatmap")
     st.pyplot(fig3)
+
