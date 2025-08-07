@@ -1,6 +1,5 @@
 
 import streamlit as st
-import streamlit.components.v1 as components
 import json
 from pathlib import Path
 from PIL import Image
@@ -8,7 +7,7 @@ import pandas as pd
 from io import BytesIO
 import matplotlib.pyplot as plt
 import seaborn as sns
-import time
+from streamlit_scroll_to_top import scroll_to_here
 
 # File paths
 input_file = Path("rendered_ui_links.json")
@@ -28,41 +27,34 @@ if "responses" not in st.session_state:
     st.session_state.responses = []
 if "evaluator_name" not in st.session_state:
     st.session_state.evaluator_name = ""
+if "scroll" not in st.session_state:
+    st.session_state.scroll = False
 
-# Scroll functions
-def scroll_to_top():
-    components.html(
-        """
-        <div id="top"></div>
-        <script>
-            // Method 1: Standard scroll
-            const mainElement = window.parent.document.querySelector('section.main');
-            if (mainElement) mainElement.scrollTo(0, 0);
-            
-            // Method 2: Anchor fallback
-            window.location.hash = '#top';
-            
-            // Method 3: Delayed scroll (double insurance)
-            setTimeout(() => {
-                if (mainElement) mainElement.scrollTo(0, 0);
-                window.parent.scrollTo(0, 0);
-            }, 100);
-        </script>
-        """,
-        height=0
-    )
+# Scroll to top whenever the flag is set
+if st.session_state.scroll:
+    scroll_to_here(0, key='top')
+    st.session_state.scroll = False
 
 # Evaluator input
 st.session_state.evaluator_name = st.text_input("👤 Enter your name (for analysis table):", st.session_state.evaluator_name)
 
 st.title("🔢 UI Ranking App (3 Layouts)")
 
+def advance():
+    ranked_entry = {
+        "user_prompt": prompts[st.session_state.index]["user_prompt"],
+        "ranks": {
+            "old": st.session_state[f"Layout 1_{st.session_state.index}"],
+            "new": st.session_state[f"Layout 2_{st.session_state.index}"],
+            "new1": st.session_state[f"Layout 3_{st.session_state.index}"]
+        }
+    }
+    st.session_state.responses.append(ranked_entry)
+    st.session_state.index += 1
+    st.session_state.scroll = True
+
 # UI prompt view
 if st.session_state.index < len(prompts):
-    # Force scroll to top on new prompt
-    scroll_to_top()
-    time.sleep(0.1)  # Small delay for rendering
-    
     item = prompts[st.session_state.index]
     st.markdown(f"### Prompt {st.session_state.index + 1} of {len(prompts)}")
     st.markdown(f"**User Prompt:** {item['user_prompt']}")
@@ -73,7 +65,6 @@ if st.session_state.index < len(prompts):
         {"label": "Layout 3", "image": item["new1"]["ui_link"], "source": "new1"}
     ]
 
-    layout_ranks = {}
     for layout in layouts:
         st.markdown(f"#### {layout['label']}")
         st.image(Image.open(layout["image"]), use_container_width=True)
@@ -81,38 +72,11 @@ if st.session_state.index < len(prompts):
             f"Rank for {layout['label']} (Best = 1)", [1, 2, 3],
             key=f"{layout['label']}_{st.session_state.index}"
         )
-        layout_ranks[layout["source"]] = rank
 
-    if st.button("✅ Submit Ranking"):
-        ranked_entry = {
-            "user_prompt": item["user_prompt"],
-            "ranks": layout_ranks
-        }
-        st.session_state.responses.append(ranked_entry)
-        st.session_state.index += 1
-        
-        # Triple scroll guarantee
-        scroll_to_top()
-        components.html(
-            """
-            <script>
-                window.parent.document.querySelector('section.main').scrollTo(0, 0);
-                setTimeout(() => {
-                    window.scrollTo(0, 0);
-                }, 50);
-            </script>
-            """,
-            height=0
-        )
-        st.markdown('<div id="top"></div>', unsafe_allow_html=True)
-        time.sleep(0.2)  # Ensure scroll executes before rerun
-        st.rerun()
+    st.button("✅ Submit Ranking", on_click=advance)
 
 # Final evaluation
 else:
-    scroll_to_top()
-    time.sleep(0.1)
-    
     st.success("✅ All prompts ranked!")
     final_output = {
         "model": full_data.get("model"),
@@ -173,15 +137,3 @@ else:
     fig, ax = plt.subplots()
     sns.barplot(data=mean_rank_df, x="Model", y="Mean Rank", ax=ax)
     st.pyplot(fig)
-
-# Final scroll insurance
-components.html(
-    """
-    <script>
-        if (window.parent.document.readyState === 'complete') {
-            window.parent.document.querySelector('section.main').scrollTo(0, 0);
-        }
-    </script>
-    """,
-    height=0
-)
