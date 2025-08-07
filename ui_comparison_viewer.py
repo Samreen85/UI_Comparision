@@ -1,4 +1,6 @@
+
 import streamlit as st
+import streamlit.components.v1 as components
 import json
 from pathlib import Path
 from PIL import Image
@@ -6,6 +8,7 @@ import pandas as pd
 from io import BytesIO
 import matplotlib.pyplot as plt
 import seaborn as sns
+import time
 
 # File paths
 input_file = Path("rendered_ui_links.json")
@@ -182,12 +185,3 @@ components.html(
     """,
     height=0
 )
-
-
-
-
-    sns.heatmap(heatmap_data.astype(float), annot=True, cmap="Blues", fmt=".2f", ax=ax3)
-    ax3.set_title("Pairwise Win Rate Heatmap")
-    st.pyplot(fig3)
-
-
