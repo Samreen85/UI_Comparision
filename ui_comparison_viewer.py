@@ -98,9 +98,9 @@ else:
         rows.append({
             "Evaluator": st.session_state.evaluator_name,
             "Prompt": entry["user_prompt"],
-            "Claude": ranks.get("old"),
-            "Original Qwen": ranks.get("new"),
-            "New Qwen": ranks.get("new1")
+            "Claude Sonnet 4 (old prompt)": ranks.get("old"),
+            "Claude Sonnet 4 (new prompt)": ranks.get("new"),
+            "Claude Opus 4 (new prompt)": ranks.get("new1")
         })
 
     with open(output_file, "w", encoding="utf-8") as f:
@@ -127,7 +127,7 @@ else:
     st.markdown("### 📈 Evaluation Metrics")
     
     # Mean Rank
-    mean_ranks = df[["Claude", "Original Qwen", "New Qwen"]].mean()
+    mean_ranks = df[["Claude Sonnet 4 (old prompt)", "Claude Sonnet 4 (new prompt)", "Claude Opus 4 (new prompt)"]].mean()
     mean_rank_df = mean_ranks.reset_index()
     mean_rank_df.columns = ["Model", "Mean Rank"]
     st.write("**Mean Rank per Model**")
@@ -137,3 +137,4 @@ else:
     fig, ax = plt.subplots()
     sns.barplot(data=mean_rank_df, x="Model", y="Mean Rank", ax=ax)
     st.pyplot(fig)
+
