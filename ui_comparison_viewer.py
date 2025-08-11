@@ -125,9 +125,16 @@ else:
 
     # Metrics section
     st.markdown("### 📈 Evaluation Metrics")
+
+    df = df.rename(columns={
+    "Claude Sonnet 4 (old prompt)": "Claude Sonnet4 old",
+    "Claude Sonnet 4 (new prompt)": "Claude Sonnet4 new",
+    "Claude Opus 4 (new prompt)": "Claude Opus4 new"
+    })
     
     # Mean Rank
     mean_ranks = df[["Claude Sonnet4 old", "Claude Sonnet4 new", "Claude Opus4 new"]].mean()
+    # mean_ranks = df[["Claude Sonnet4 old", "Claude Sonnet4 new", "Claude Opus4 new"]].mean()
     mean_rank_df = mean_ranks.reset_index()
     mean_rank_df.columns = ["Model", "Mean Rank"]
     st.write("**Mean Rank per Model**")
@@ -137,5 +144,6 @@ else:
     fig, ax = plt.subplots()
     sns.barplot(data=mean_rank_df, x="Model", y="Mean Rank", ax=ax)
     st.pyplot(fig)
+
 
 
