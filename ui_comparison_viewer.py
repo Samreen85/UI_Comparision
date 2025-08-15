@@ -157,7 +157,7 @@ from io import BytesIO
 from streamlit_scroll_to_top import scroll_to_here
 
 # ——— DB CONFIG ———
-DB_HOST = "127.0.0.1"
+DB_HOST = "104.197.214.13"
 DB_PORT = "5432"
 DB_NAME = "dc-db-dev"
 DB_USER = "postgres"
@@ -297,6 +297,7 @@ else:
         st.write("Collected Rankings:", st.session_state.responses)
     else:
         st.write("No rankings collected yet.")
+
 
 
 
